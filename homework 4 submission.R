@@ -170,6 +170,8 @@ cat("Negative Binomial MAE:", mae_nb, "\n")
 
 ### It is because both models are fitting the same expected mean for each observation.
 
+## ASW: yes! Exactly -- the reasons for selecting the poisson have more to do with the fact that when there's overdispersion, applying the poisson would violate the assumptions of that statistical tool (and cause us to falsely deflate the p-values!). They do predict similar mean rates, but the negative binomial describes the tail of our data differently, shifting the pvals.
+
 
 ### Poisson GLM assumes that the values of Seedlings follow a Poisson distribution, 
 ### thus, the variance is equal to the mean.
@@ -178,6 +180,7 @@ cat("Negative Binomial MAE:", mae_nb, "\n")
 ### Negative Binomial GLM relaxes that assumption by allowing 
 ### the variance to be greater than the mean, but does not change the estimate of the expected mean.
 
+## ASW: great! the estimate of the mean may shift a bit depending on the variance, but does not move by much in this case.
 
 # ANSWERING QUESTION 1b ----------------------------------------------------
 
@@ -224,6 +227,8 @@ ggplot(pred, aes(x = x, y = predicted)) +
 
 ### ANSWERING QUESTION 1b
 
+## ASW: no need to use the poisson, once we've demonstrated that we violate the poisson's assumptions if we apply it to this data/model structure!
+
 ### Both the negative binomial model and the Poisson GLM model 
 ###  show that mistletoe infection significantly increases seedling density under parasitized trees. 
 ### This is observed in the slope value (Treatment unparasitized), which is -3.1575 with a highly significant p-value (<2e-16), 
@@ -237,6 +242,9 @@ ggplot(pred, aes(x = x, y = predicted)) +
 
 ### The number of seedling under parasitized trees and unparasitized trees can be seen
 ###  in plot prediction, as well.
+
+
+## ASW: awesome work!
 
 
 
@@ -268,6 +276,8 @@ exp(0.6000)
 
 ### Treatment: Year interaction effect
 
+
+## ASW: Remember that the slope on its own can't be interpreted in terms of "the amount" of seedlings
 exp(0.8956)  
 
 
@@ -285,7 +295,15 @@ exp(0.8956)
 ###  trees in 2012, there was no clear effect of mistletoe infection across years.
 
 
+## ASW: This is really close! For interpreting the interaction try:
+predictions(glm_interaction.nbin, newdata = data.frame(Treatment=c("parasitized", "unparasitized"),
+                                                       Year=c(2011, 2011, 2012, 2012)))
 
+
+## The difference between parasitized and unparasitized trees shifted from 213.6 in 2011 to  376.6 in year 2!
+
+
+## ASW: 27/30
 
 # NOTES BEFORE ANSWERING QUESTION 2 ---------------------------------------
 
@@ -379,9 +397,8 @@ summary(glm_thinning2)
 
 
 ###  Slope
-
+## ASW: See above, but transforming the slope on its own doesn't tell us about anything on the probability scale, and we need to use plogis to convert to probability scale for the binomial (though exp will tell you about the "odds")
 exp(-1.8559)
-
 
 1-0.1563122
 
@@ -393,7 +410,13 @@ exp(-1.8559)
 ### is just the 15.63%, compare with the tree mortality in unthinned forest.
 ###  In other words, thinning treatment reduce mortality in wildfire in 84.37%.
 
+### ASW: Probability in unthinned forest =
+plogis(0.99)
 
+## Probability in thinned forest = 
+plogis(0.99 -1.8559)
+
+## Thinning decreases probability of mortality from 73% to 30%
 
 # ANSWERING QUESTION 2b ---------------------------------------------------
 
@@ -424,10 +447,14 @@ t.test(treesize ~ thinning, data = treemortality)
 
 ###  The data collection process is already balanced. 
 ### This means that its effect on mortality is not systematically different between 
-### thinned and unthinned forests, and adding it to the model would not modify the effect of thinning, 
+### thinned and unthinned forests, and adding it to the model would not modify the effect of thinning,
+
 ### as randomization ensures that thinning is independent of tree size.
 ### Including unnecessary variables can reduce model efficiency, 
 ### adding complexity without improving the accuracy of the estimation of the thinning effect.
+
+
+## ASW: This is an amazing answer!! ! You could include it for other reasons, but it's not needed to accurately estimate the effect of thinning!
 
 
 
@@ -502,4 +529,11 @@ summary(glm_updated)
 ### than the original model.
 
 ### The above results support the reviewer's concerns regarding the DAGs he proposed in the new model.
+
+
+## ASW: Great answer! Try converting those slopes into a conversation about how the estimated effect of thinning shifts (on the probability scale).
+
+## 16/20
+
+## 43/50 
 
