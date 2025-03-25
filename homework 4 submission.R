@@ -262,7 +262,7 @@ ggplot(pred, aes(x = x, y = predicted)) +
 ### Now, I will fit a model with interaction Treatment * year
 
 
-glm_interaction.nbin <- glm.nb(Seedlings ~ Treatment * Year, data = mistletoe)
+glm_interaction.nbin <- glm.nb(Seedlings ~ Treatment * as.factor(Year), data = mistletoe)
 
 
 summary(glm_interaction.nbin)
@@ -277,7 +277,6 @@ exp(0.6000)
 ### Treatment: Year interaction effect
 
 
-## ASW: Remember that the slope on its own can't be interpreted in terms of "the amount" of seedlings
 exp(0.8956)  
 
 
@@ -301,6 +300,8 @@ predictions(glm_interaction.nbin, newdata = data.frame(Treatment=c("parasitized"
 
 
 ## The difference between parasitized and unparasitized trees shifted from 213.6 in 2011 to  376.6 in year 2!
+
+## ASW: The difference with what you have above that applying exp() to the interaction term on its own tells us how the difference between treatments changes over time, not how the amount of seedlings under unparasitized trees changes.
 
 
 ## ASW: 27/30
@@ -397,7 +398,7 @@ summary(glm_thinning2)
 
 
 ###  Slope
-## ASW: See above, but transforming the slope on its own doesn't tell us about anything on the probability scale, and we need to use plogis to convert to probability scale for the binomial (though exp will tell you about the "odds")
+
 exp(-1.8559)
 
 1-0.1563122
@@ -410,6 +411,8 @@ exp(-1.8559)
 ### is just the 15.63%, compare with the tree mortality in unthinned forest.
 ###  In other words, thinning treatment reduce mortality in wildfire in 84.37%.
 
+## ASW: this is really close! Your interpretation of the odds is correct -- 1-exp(-1.8559) tells us that the ODDS of mortality is 84% less likely in thinned forests compared to the baseline probability in unthinned forests, but the interpretation of the exp(-1.85) can't be described as the probability of tree mortality in the thinned forest.
+
 ### ASW: Probability in unthinned forest =
 plogis(0.99)
 
@@ -417,6 +420,17 @@ plogis(0.99)
 plogis(0.99 -1.8559)
 
 ## Thinning decreases probability of mortality from 73% to 30%
+
+## As odds you can also say:
+## THinning decreases the odds of mortality by 84%
+
+exp(0.99) # ODDS of mortality in unthinned are 2.69 to 1
+exp(0.99 -1.8559) ## ODDS of mortality in thinned forest are 0.42 to 1
+
+(2.69 - 0.42) / 2.69
+# = 84% decrease in the ODDS (Not the probability)
+
+## ASW: Not taking off for this though, because you took this to the next level, and we didn't cover odds-based interpretation in depth yet!
 
 # ANSWERING QUESTION 2b ---------------------------------------------------
 
@@ -531,9 +545,9 @@ summary(glm_updated)
 ### The above results support the reviewer's concerns regarding the DAGs he proposed in the new model.
 
 
-## ASW: Great answer! Try converting those slopes into a conversation about how the estimated effect of thinning shifts (on the probability scale).
+## ASW: Great answer! 
 
-## 16/20
+## 19/20
 
-## 43/50 
+## 46/50 
 
